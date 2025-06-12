@@ -1,9 +1,10 @@
 import { Router } from "express";
 
-const router = Router();
+import health from "./health";
+import hidden from "./hidden";
 
-router.get("/", (_, res) => {
-  res.json({ message: "Hello, TypeScript API!" });
-});
+const app = Router();
+app.use(health);
+app.use(hidden);
 
-export default router;
+export default app;
