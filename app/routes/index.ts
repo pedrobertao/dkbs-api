@@ -1,10 +1,10 @@
 import { Router } from "express";
 
 import health from "./health";
-import hidden from "./hidden";
+import userRoute from "./users";
 
 const app = Router();
 app.use(health);
-app.use(hidden);
+app.use(userRoute);
 
 export default app;

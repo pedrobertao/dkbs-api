@@ -14,11 +14,11 @@ app.use(express.json());
 // Docs
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// Routing
-app.use("/api", routes);
-
 // Welcome Page
 app.use("/", home);
+
+// Routing
+app.use("/v1", routes);
 
 // Everything Else
 app.use((_, res) =>
