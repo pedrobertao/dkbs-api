@@ -4,6 +4,7 @@ import { IUser } from "../entities/user";
 import { PermissionContext } from "../patterns/composite/permission";
 import { BaseResource } from "../patterns/composite/resource";
 import { BaseTopic } from "../patterns/composite/topic";
+import { CustomPathfinder } from "./pathFinder";
 import { ResourceManagement } from "./resourceManagement";
 import { TopicVersionControl } from "./topicVersionControl";
 
@@ -163,5 +164,14 @@ export class TopicManagementService {
     };
 
     return buildTree(topic);
+  }
+
+  findShortestPath(startTopicId: string, targetTopicId: string): string[] {
+    const allTopics = this.getAllLatestTopics();
+    return CustomPathfinder.findShortestPath(
+      startTopicId,
+      targetTopicId,
+      allTopics
+    );
   }
 }

@@ -3,10 +3,7 @@ import { ITopic } from "./topic";
 // Base Resource Types
 export enum ResourceType {
   VIDEO = "video",
-  ARTICLE = "article",
   PDF = "pdf",
-  DOCUMENT = "document",
-  WEBSITE = "website",
   IMAGE = "image",
 }
 

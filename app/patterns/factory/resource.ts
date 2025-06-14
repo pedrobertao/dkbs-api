@@ -1,6 +1,6 @@
 import { IResource, ResourceType } from "../../entities/resource";
 import {
-  ArticleResource,
+  ImageResource,
   BaseResource,
   PDFResource,
   VideoResource,
@@ -19,8 +19,8 @@ export class ResourceFactory implements IResourceFactory {
     switch (data.type) {
       case ResourceType.VIDEO:
         return new VideoResource(data);
-      case ResourceType.ARTICLE:
-        return new ArticleResource(data);
+      case ResourceType.IMAGE:
+        return new ImageResource(data);
       case ResourceType.PDF:
         return new PDFResource(data);
       default:

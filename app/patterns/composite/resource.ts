@@ -42,16 +42,15 @@ export class VideoResource extends BaseResource {
   }
 }
 
-export class ArticleResource extends BaseResource {
+export class ImageResource extends BaseResource {
   validate(): boolean {
     return this.url.startsWith("http") || this.url.startsWith("https");
   }
 
   getMetadata(): Record<string, any> {
     return {
-      type: "article",
+      type: "image",
       readable: true,
-      textContent: true,
     };
   }
 }

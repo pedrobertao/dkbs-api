@@ -24,7 +24,7 @@ app.use("/", (_, res) => {
 
 // Everything Else
 app.use((_, res) =>
-  res.sendFile(path.join(__dirname, "/public", "notfound.html"))
+  res.status(400).sendFile(path.join(__dirname, "/public", "notfound.html"))
 );
 
 export default app;
