@@ -28,11 +28,3 @@ export class ResourceFactory implements IResourceFactory {
     }
   }
 }
-
-export class ResourceFactoryProvider {
-  private static factory: IResourceFactory = new ResourceFactory();
-
-  static getFactory(): IResourceFactory {
-    return this.factory;
-  }
-}

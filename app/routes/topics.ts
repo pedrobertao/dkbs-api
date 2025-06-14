@@ -1,53 +1,91 @@
 import { Request, Response, Router } from "express";
-import { body, query } from "express-validator";
-import * as UserControllers from "../controllers/users";
+import { body, param } from "express-validator";
 import { checkParams } from "./validator";
+import { controller } from "../controllers/user";
 
 const topicsRoute = Router();
 
-// Get User
-const getValidation = query("email")
-  .notEmpty()
-  .withMessage("Email is required")
-  .isEmail()
-  .withMessage("Invalid email");
-const get = topicsRoute.get(
-  "/",
-  getValidation,
+const getByIDValidation = param("id").notEmpty();
+const getByID = topicsRoute.get(
+  "/:id",
+  getByIDValidation,
   async (req: Request, res: Response): Promise<void> => {
     try {
       const error = checkParams(req);
       if (error) {
-        res.status(400).json({ errors: error.array() });
+        res.status(404).json({ errors: error.array() });
         return;
       }
-      const { email } = req.body;
-      const user = await UserControllers.getUserByEmail(email);
-      if (user) {
-        res.status(200).json(user);
+
+      const response = await controller.getTopic(req.params.id);
+      if (response) {
+        res.status(200).json(response);
         return;
       }
-      res.status(404).json({ message: "User not found" });
-      return;
+      res.status(404).json({ message: "Topic not found" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal error" });
-      return;
+    }
+  }
+);
+// const getByIDValidation = param("id").notEmpty();
+const getTreeByID = topicsRoute.get(
+  "/:id/tree",
+  getByIDValidation,
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const error = checkParams(req);
+      if (error) {
+        res.status(404).json({ errors: error.array() });
+        return;
+      }
+
+      const response = await controller.getTopicTree(req.params.id);
+      if (response) {
+        res.status(200).json(response);
+        return;
+      }
+      res.status(404).json({ message: "Topic not found" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal error" });
     }
   }
 );
 
-// Create User
-const putValidation = [
-  body("email")
-    .notEmpty()
-    .withMessage("Email is required")
-    .isEmail()
-    .withMessage("Invalid email"),
+const createOrUpdatetValidation = [
+  body("id").notEmpty(),
+  body("name").notEmpty(),
+  body("content").notEmpty(),
 ];
-const put = topicsRoute.put(
+const createOrUpdate = topicsRoute.put(
   "/",
-  ...putValidation,
+  ...createOrUpdatetValidation,
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const error = checkParams(req);
+      if (error) {
+        res.status(404).json({ errors: error.array() });
+        return;
+      }
+      const response = await controller.createTopicOrUpdate(req);
+      if (response) {
+        res.status(200).json(response);
+        return;
+      }
+      res.status(404).json({ message: "Topic not found" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal error" });
+    }
+  }
+);
+
+const deleteByIDValidation = param("id").notEmpty();
+const deleteByID = topicsRoute.delete(
+  "/:id",
+  deleteByIDValidation,
   async (req: Request, res: Response): Promise<void> => {
     try {
       const error = checkParams(req);
@@ -55,72 +93,22 @@ const put = topicsRoute.put(
         res.status(400).json({ errors: error.array() });
         return;
       }
-
-      const { name, email, role } = req.body;
-      const user = await UserControllers.createUser(name, email, role);
-      res.status(200).json({ message: "User created" + user.name });
-      return;
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal error" });
-      return;
-    }
-  }
-);
-
-// Delete User
-const deleteValidation = [body("id").notEmpty().withMessage("ID is required")];
-const del = topicsRoute.delete(
-  "/",
-  ...deleteValidation,
-  async (req: Request, res: Response): Promise<void> => {
-    try {
-      const error = checkParams(req);
-      if (error) {
-        res.status(400).json({ errors: error.array() });
+      const response = await controller.deleteResource(req.params.id);
+      if (response) {
+        res.status(200).json(response);
         return;
       }
-
-      const { id } = req.body;
-      await UserControllers.deleteUserByID(id);
-      res.status(200).json({ message: "User deleted" });
-      return;
+      res.status(400).json({ message: "Topic not found" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal error" });
-      return;
     }
   }
 );
 
-// Update User
-const updateValidation = [body("id").notEmpty().withMessage("ID is required")];
-const pat = topicsRoute.patch(
-  "/",
-  ...updateValidation,
-  async (req: Request, res: Response): Promise<void> => {
-    try {
-      const error = checkParams(req);
-      if (error) {
-        res.status(400).json({ errors: error.array() });
-        return;
-      }
-
-      const { id } = req.body;
-      await UserControllers.updateUserByID(id);
-      res.status(200).json({ message: "User updated" });
-      return;
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal error" });
-      return;
-    }
-  }
-);
-
-topicsRoute.use("/topics", put);
-topicsRoute.use("/topics", get);
-topicsRoute.use("/topics", del);
-topicsRoute.use("/topics", pat);
+topicsRoute.use("/topics", getByID);
+topicsRoute.use("/topics", createOrUpdate);
+topicsRoute.use("/topics", deleteByID);
+topicsRoute.use("/topics", getTreeByID);
 
 export default topicsRoute;

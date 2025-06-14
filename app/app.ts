@@ -3,18 +3,19 @@ import routes from "./routes";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./utils/swagger";
 import path from "path";
+import { customLogger } from "./middleware/logger";
 
 // Express App
 const app = express();
 
 // Essentials
 app.use(express.json());
-
-// Docs
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(customLogger);
 
 // Routing
 app.use("/v1", routes);
+// Docs
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Welcome Page
 app.use("/", (_, res) => {
