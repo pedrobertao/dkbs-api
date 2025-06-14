@@ -1,17 +1,15 @@
 import { Request, Response, Router } from "express";
-import { body, param } from "express-validator";
-import { checkParams } from "./validator";
 import { controller } from "../controllers/user";
+import * as Validator from "./validator";
 
 const topicsRoute = Router();
 
-const paramIDValidation = param("id").notEmpty();
 const getByID = topicsRoute.get(
   "/:id",
-  paramIDValidation,
+  Validator.paramIDValidation,
   async (req: Request, res: Response): Promise<void> => {
     try {
-      const error = checkParams(req);
+      const error = Validator.checkParams(req);
       if (error) {
         res.status(404).json({ errors: error.array() });
         return;
@@ -32,10 +30,10 @@ const getByID = topicsRoute.get(
 
 const getTreeByID = topicsRoute.get(
   "/:id/tree",
-  paramIDValidation,
+  Validator.paramIDValidation,
   async (req: Request, res: Response): Promise<void> => {
     try {
-      const error = checkParams(req);
+      const error = Validator.checkParams(req);
       if (error) {
         res.status(404).json({ errors: error.array() });
         return;
@@ -54,13 +52,12 @@ const getTreeByID = topicsRoute.get(
   }
 );
 
-const paramPathValidation = [param("id").notEmpty(), param("id").notEmpty()];
 const getSortestPath = topicsRoute.get(
   "/:startId/:targetId",
-  ...paramPathValidation,
+  ...Validator.paramPathValidation,
   async (req: Request, res: Response): Promise<void> => {
     try {
-      const error = checkParams(req);
+      const error = Validator.checkParams(req);
       if (error) {
         res.status(404).json({ errors: error.array() });
         return;
@@ -74,7 +71,7 @@ const getSortestPath = topicsRoute.get(
         res.status(200).json(response);
         return;
       }
-      res.status(404).json({ message: "Topic not found" });
+      res.status(404).json({ message: "Start or target not found" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal error" });
@@ -82,18 +79,12 @@ const getSortestPath = topicsRoute.get(
   }
 );
 
-const createOrUpdatetValidation = [
-  body("id").notEmpty(),
-  body("name").notEmpty(),
-  body("content").notEmpty(),
-  body("parentTopicId").optional(),
-];
 const createOrUpdate = topicsRoute.put(
   "/",
-  ...createOrUpdatetValidation,
+  ...Validator.createOrUpdatetValidation,
   async (req: Request, res: Response): Promise<void> => {
     try {
-      const error = checkParams(req);
+      const error = Validator.checkParams(req);
       if (error) {
         res.status(404).json({ errors: error.array() });
         return;
@@ -111,19 +102,12 @@ const createOrUpdate = topicsRoute.put(
   }
 );
 
-const createResourceValidation = [
-  body("id").notEmpty(),
-  body("topicId").notEmpty(),
-  body("url").notEmpty().isURL(),
-  body("description").notEmpty(),
-  body("type").notEmpty(),
-];
 const createResource = topicsRoute.put(
   "/:id/resource",
-  ...createResourceValidation,
+  ...Validator.createResourceValidation,
   async (req: Request, res: Response): Promise<void> => {
     try {
-      const error = checkParams(req);
+      const error = Validator.checkParams(req);
       if (error) {
         res.status(404).json({ errors: error.array() });
         return;
@@ -143,10 +127,10 @@ const createResource = topicsRoute.put(
 
 const deleteResourceByID = topicsRoute.delete(
   "/:id/resource",
-  paramIDValidation,
+  Validator.paramIDValidation,
   async (req: Request, res: Response): Promise<void> => {
     try {
-      const error = checkParams(req);
+      const error = Validator.checkParams(req);
       if (error) {
         res.status(400).json({ errors: error.array() });
         return;
